@@ -1,0 +1,30 @@
+{
+  "name": "e-books-dashboard-node",
+  "version": "1.0.0",
+  "description": "This is a ebook api",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.ts"
+  },
+  "keywords": [
+    "rest",
+    "api",
+    "espress"
+  ],
+  "author": "Narayan M <narayanmungase03@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.1.0",
+    "eslint": "^9.8.0",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

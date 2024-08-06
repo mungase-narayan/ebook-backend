@@ -62,11 +62,11 @@ const registerUser = async (
 
         // token
         access_token = await JwtService.sign({
-            id: result._id,
+            sub: result._id,
             role: result.role,
         });
         refresh_token = await JwtService.sign(
-            { id: result._id, role: result.role },
+            { sub: result._id, role: result.role },
             "1y",
             config.refreshSecret
         );

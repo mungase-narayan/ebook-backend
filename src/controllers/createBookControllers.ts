@@ -7,7 +7,7 @@ import createHttpError from "http-errors";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
     const { title, genre } = req.body;
-    console.log("files :", req.files);
+    // console.log("files :", req.files);
 
     const files = req.files as { [filename: string]: Express.Multer.File[] };
     const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
@@ -43,6 +43,9 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         );
         console.log("cover image upload result", uploadResult);
         console.log("book file upload result", bookFileUploadResult);
+        
+        // @ts-ignore
+        console.log('userId', req.userId);
 
         const newBook = await bookModel.create({
             title,

@@ -33,11 +33,11 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         const access_token = await JwtService.sign({
-            id: user._id,
+            sub: user._id,
             role: user.role,
         });
         const refresh_token = await JwtService.sign(
-            { id: user._id, role: user.role },
+            { sub: user._id, role: user.role },
             "1y",
             config.refreshSecret
         );

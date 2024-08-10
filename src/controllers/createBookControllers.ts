@@ -4,10 +4,10 @@ import path from "node:path";
 import fs from "node:fs";
 import bookModel from "../model/bookModel";
 import createHttpError from "http-errors";
+import { AuthRequest } from "../middlewares/authenticate";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
     const { title, genre } = req.body;
-    // console.log("files :", req.files);
 
     const files = req.files as { [filename: string]: Express.Multer.File[] };
     const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
@@ -41,25 +41,26 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
                 format: "pdf",
             }
         );
-        console.log("cover image upload result", uploadResult);
-        console.log("book file upload result", bookFileUploadResult);
-        
-        // @ts-ignore
-        console.log('userId', req.userId);
+
+        const _req = req as AuthRequest;
+        console.log(_req.userId);
+        //66b21b5437cee6ac2e8091d0
 
         const newBook = await bookModel.create({
             title,
             genre,
-            auther: "66ae2af45c9e0b7f45d6b092",
+            auther: _req.userId,
             coverImage: uploadResult.secure_url,
             pdfFile: bookFileUploadResult.secure_url,
         });
 
-        // wrap in the try catch
+        console.log(newBook);
+
+        // task: wrap in the try catch
         await fs.promises.unlink(filePath);
         await fs.promises.unlink(bookFilePath);
 
-        res.status(201).json({id: newBook._id});
+        res.status(201).json({ id: newBook._id });
     } catch (error) {
         console.log("Error uploading book file", error);
         return next(createHttpError(500, "Error While Uploading The Files"));

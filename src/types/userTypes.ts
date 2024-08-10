@@ -1,3 +1,5 @@
+import { Book } from "./bookTypes";
+
 export interface User {
     _id: string;
     fullName: string;
@@ -5,5 +7,6 @@ export interface User {
     email: string;
     password: string;
     role: string;
+    books: Book[];
     confirmPassword: string;
 }

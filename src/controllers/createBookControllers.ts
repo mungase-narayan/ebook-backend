@@ -7,31 +7,55 @@ import createHttpError from "http-errors";
 import { AuthRequest } from "../middlewares/authenticate";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
-    const { title, genre } = req.body;
-
-    const files = req.files as { [filename: string]: Express.Multer.File[] };
-    const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
-    const fileName = files.coverImage[0].filename;
-    const filePath = path.resolve(
-        __dirname,
-        "../../public/data/uploads",
-        fileName
-    );
-
     try {
-        const uploadResult = await cloudinary.uploader.upload(filePath, {
-            filename_override: fileName,
-            folder: "book-covers",
-            format: coverImageMimeType,
-        });
+        const { title, genre, description } = req.body;
 
-        const bookFileName = files.pdfFile[0].filename;
+        // Destructure the files from the request (Multer is used for handling file uploads)
+        const files = req.files as {
+            [fieldname: string]: Express.Multer.File[];
+        };
+
+        // console.log("Files :", files);
+
+        // Check if coverImage and file exist
+        const coverImage = files?.coverImage?.[0];
+        const bookFile = files?.pdfFile?.[0];
+
+        // If either the cover image or book file is missing, return an error
+        if (!coverImage || !bookFile) {
+            return next(
+                createHttpError(400, "Cover image or book file is missing")
+            );
+        }
+
+        // Extract the cover image MIME type and filename
+        const coverImageMimeType = coverImage.mimetype.split("/").pop();
+        const coverImageFileName = coverImage.filename;
+        const coverImageFilePath = path.resolve(
+            __dirname,
+            "../../public/data/uploads",
+            coverImageFileName
+        );
+
+        // Upload the cover image to Cloudinary
+        const uploadResult = await cloudinary.uploader.upload(
+            coverImageFilePath,
+            {
+                filename_override: coverImageFileName,
+                folder: "book-covers",
+                format: coverImageMimeType,
+            }
+        );
+
+        // Extract the book file name and file path
+        const bookFileName = bookFile.filename;
         const bookFilePath = path.resolve(
             __dirname,
             "../../public/data/uploads",
             bookFileName
         );
 
+        // Upload the book PDF file to Cloudinary
         const bookFileUploadResult = await cloudinary.uploader.upload(
             bookFilePath,
             {
@@ -42,27 +66,33 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
             }
         );
 
+        // Cast the request to include the user ID
         const _req = req as AuthRequest;
-        console.log(_req.userId);
-        //66b21b5437cee6ac2e8091d0
+        // console.log("User Id", _req.userId);
 
+        // Create a new book entry in the database
         const newBook = await bookModel.create({
             title,
+            description,
             genre,
-            auther: _req.userId,
+            author: _req.userId, // Assuming req.userId is available
             coverImage: uploadResult.secure_url,
             pdfFile: bookFileUploadResult.secure_url,
         });
 
-        console.log(newBook);
-
-        // task: wrap in the try catch
-        await fs.promises.unlink(filePath);
-        await fs.promises.unlink(bookFilePath);
-
-        res.status(201).json({ id: newBook._id });
+        // Delete the temporary files from the server after successful upload
+        try {
+            await fs.promises.unlink(coverImageFilePath);
+            await fs.promises.unlink(bookFilePath);
+            // If all operations are successful, return the new book's ID
+            return res.status(201).json({ BookId: newBook._id });
+        } catch (fileDeleteError) {
+            return next(
+                createHttpError(400, "Error while deleting temporary files")
+            );
+        }
     } catch (error) {
-        console.log("Error uploading book file", error);
+        console.log(error);
         return next(createHttpError(500, "Error While Uploading The Files"));
     }
 };

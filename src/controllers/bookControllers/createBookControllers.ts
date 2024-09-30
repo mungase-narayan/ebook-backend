@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import cloudinary from "../config/cloudinary";
+import cloudinary from "../../config/cloudinary";
 import path from "node:path";
 import fs from "node:fs";
-import bookModel from "../model/bookModel";
+import bookModel from "../../model/bookModel";
 import createHttpError from "http-errors";
-import { AuthRequest } from "../middlewares/authenticate";
+import { AuthRequest } from "../../middlewares/authenticate";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -33,7 +33,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         const coverImageFileName = coverImage.filename;
         const coverImageFilePath = path.resolve(
             __dirname,
-            "../../public/data/uploads",
+            "../../../public/data/uploads",
             coverImageFileName
         );
 
@@ -51,7 +51,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
         const bookFileName = bookFile.filename;
         const bookFilePath = path.resolve(
             __dirname,
-            "../../public/data/uploads",
+            "../../../public/data/uploads",
             bookFileName
         );
 

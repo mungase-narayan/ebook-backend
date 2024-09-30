@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import RefreshToken from "../model/refreshToken";
+import RefreshToken from "../../model/refreshToken";
 import Joi from "joi";
 
 const logoutUser = async (req: Request, res: Response, next: NextFunction) => {

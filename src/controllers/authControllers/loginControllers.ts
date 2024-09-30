@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
-import userModel from "../model/userModel";
-import customErrorHandler from "../services/customErrorHandler";
+import userModel from "../../model/userModel";
+import customErrorHandler from "../../services/customErrorHandler";
 import bcrypt from "bcrypt";
-import JwtService from "../services/jwtService";
-import RefreshToken from "../model/refreshToken";
-import { config } from "../config/config";
+import JwtService from "../../services/jwtService";
+import RefreshToken from "../../model/refreshToken";
+import { config } from "../../config/config";
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     const loginSchema = Joi.object({

@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
-import userModel from "../model/userModel";
+import userModel from "../../model/userModel";
 import bcrypt from "bcrypt";
 import Joi from "joi";
-import { config } from "../config/config";
-import JwtService from "../services/jwtService";
-import RefreshToken from "../model/refreshToken";
+import { config } from "../../config/config";
+import JwtService from "../../services/jwtService";
+import RefreshToken from "../../model/refreshToken";
 
 const registerUser = async (
     req: Request,
